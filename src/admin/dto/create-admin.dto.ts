@@ -1,17 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, IsEmail, IsPhoneNumber, IsDateString } from "class-validator";
 
-export class CreateUserDto {
-    @ApiProperty({example:'Eshmat', description:"Foydalanuvchi ismi"})
-    @IsNotEmpty()
-    @IsString()
-    first_name:string
-
-    @ApiProperty({example:'Eshmatov', description:"Foydalanuvchi familiyasi"})
-    @IsNotEmpty()
-    @IsString()
-    last_name:string
-
+export class CreateAdminDto {
     @ApiProperty({example:'Eshmat77', description:"Foydalanuvchi username"})
     @IsNotEmpty()
     @IsString()
@@ -32,13 +22,8 @@ export class CreateUserDto {
     email:string
 
     @ApiProperty({example:'+998931208896', description:"Foydalanuvchi Telefon raqami"})
-    @IsPhoneNumber('UZ')
-    phone:string
-
-    @ApiProperty({example:'+998931208896', description:"Foydalanuvchi Telefon raqami"})
     @IsString()
     tg_link:string
-
 
     @ApiProperty({example:'2008-12-20', description:"Foydalanuvchi Tugilgan kuni"})
     @IsNotEmpty()

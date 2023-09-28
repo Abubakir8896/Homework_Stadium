@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './models/user.model';
 import {JwtService} from '@nestjs/jwt'
 import { Response } from 'express';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import * as bcrypt from 'bcrypt'
 import {v4} from 'uuid';
 import { MailService } from 'src/mail/mail.service';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { Admin } from './models/admin.model';
 
 @Injectable()
-export class UsersService 
+export class AdminsService 
 {
   constructor(
-    @InjectModel(User) private readonly userRepo: typeof User,
+    @InjectModel(Admin) private readonly adminRepo: typeof Admin,
     private readonly jwtService:JwtService,
     private readonly mailService: MailService){}
 
-    async getTokens(user:User){
+    async getTokens(user:Admin){
       const jwtPayload ={
         id:user.id,
         is_active:user.is_active,
@@ -38,18 +37,18 @@ export class UsersService
       return {access_token: accessToken, refresh_token:refreshToken}
     };
 
-    async registration(createUserDto:CreateUserDto, res:Response){
-      const user = await this.userRepo.findOne({where:{username:createUserDto.username}})
+    async registration(createAdminDto:CreateAdminDto, res:Response){
+      const user = await this.adminRepo.findOne({where:{username:createAdminDto.username}})
 
       if(user) throw new BadRequestException("Username already exist!")
 
-      if(createUserDto.password != createUserDto.confirm_password) throw new BadRequestException("Password is not match")
+      if(createAdminDto.password != createAdminDto.confirm_password) throw new BadRequestException("Password is not match")
 
-      const hashed_password = await bcrypt.hash(createUserDto.password, 7)
+      const hashed_password = await bcrypt.hash(createAdminDto.password, 7)
 
       
-      const newUser = await this.userRepo.create({
-        ...createUserDto,
+      const newUser = await this.adminRepo.create({
+        ...createAdminDto,
         hashed_password:hashed_password,
       });
 
@@ -59,7 +58,7 @@ export class UsersService
 
       const uniqueKey:string = v4()
 
-      const updatedUser = await this.userRepo.update({
+      const updatedAdmin = await this.adminRepo.update({
         hashed_refresh_token:hashed_refresh_token,
         activation_link:uniqueKey,
       },{where:{id:newUser.id}, returning:true});
@@ -70,15 +69,15 @@ export class UsersService
       });
 
       try {
-        await this.mailService.sendUserConfirmation(updatedUser[1][0]);
+        await this.mailService.sendAdminConfirmation(updatedAdmin[1][0]);
       } catch (error) {
         console.log(error);
         
       }
 
       const response = {
-        message:"User Registered",
-        user:updatedUser[1][0],
+        message:"Admin Registered",
+        user:updatedAdmin[1][0],
         tokens,
       }
       return response
@@ -88,17 +87,17 @@ export class UsersService
   async activate(link:string){
     console.log(link);
     
-    if(link) throw new BadRequestException('Activation link not found')
+    if(!link) throw new BadRequestException('Activation link not found')
 
-    const updatedUser = await this.userRepo.update({is_active:true}, {where:{activation_link: link, is_active:false}, returning:true});
-
-    if(updatedUser[1][0]) throw new BadRequestException("User already exist");
-
+    const updatedAdmin = await this.adminRepo.update({is_active:true}, {where:{activation_link: link, is_active:false}, returning:true});
+    
+    
+    if(!updatedAdmin) throw new BadRequestException("Admin already exist");
+    
       const response ={
-        message:'User Activated successfully',
-        use:updatedUser
+        message:'Admin Activated successfully',
+        use:updatedAdmin[1][0]
       };
       return response
   }
-
   }

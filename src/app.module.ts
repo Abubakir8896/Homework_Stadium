@@ -7,6 +7,8 @@ import { ComfortsModule } from './comforts/comforts.module';
 import { RegionModule } from './region/region.module';
 import { CategoriesModule } from './categories/categories.module';
 import { DestrictModule } from './destrict/destrict.module';
+import { MailModule } from './mail/mail.module';
+import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +30,8 @@ import { DestrictModule } from './destrict/destrict.module';
     RegionModule,
     CategoriesModule,
     DestrictModule,
+    MailModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],

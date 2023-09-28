@@ -1,15 +1,12 @@
 import {ApiProperty} from '@nestjs/swagger'
 import { Table, Model, Column , DataType} from 'sequelize-typescript'
 
-interface UserAttr{
-    first_name: string
-    last_name: string
+interface AdminAttr{
     username: string
     hashed_password: string
     tg_link: string
     email: string
-    phone: string
-    user_photo: string
+    admin_photo: string
     birthday:Date 
     is_owner:boolean;
     is_active:boolean
@@ -17,8 +14,8 @@ interface UserAttr{
     activation_link:string
 }
 
-@Table({tableName: 'users'})
-export class User extends Model<User, UserAttr>{
+@Table({tableName: 'admins'})
+export class Admin extends Model<Admin, AdminAttr>{
     @ApiProperty({example:1, description:"Unique ID"})
     @Column({
         type:DataType.INTEGER,
@@ -26,18 +23,6 @@ export class User extends Model<User, UserAttr>{
         primaryKey:true
     })
     id:number;
-
-    @ApiProperty({example:"Eshmat", description:"Foydalanuvchining ismi"})
-    @Column({
-        type: DataType.STRING
-    })
-    first_name: string
-
-    @ApiProperty({example:"Eshmatov", description:"Foydalanuvchining Familiyasi"})
-    @Column({
-        type: DataType.STRING
-    })
-    last_name: string
 
     @ApiProperty({example:"Eshmat77", description:"Foydalanuvchining username"})
     @Column({
@@ -71,13 +56,6 @@ export class User extends Model<User, UserAttr>{
         type: DataType.STRING
     })
     user_photo: string
-
-    @ApiProperty({example:"+998931208896", description:"Foydalanuvchining Telefon raqami"})
-    @Column({
-        type: DataType.STRING,
-        allowNull:false
-    })
-    phone: string
 
     @ApiProperty({example:"2008-12-20", description:"Foydalanuvchining tug'ilgan kuni"})
     @Column({
